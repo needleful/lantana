@@ -1,0 +1,35 @@
+How should I make a test engine. What features do I want?
+
+Modules:
+- Core
+	- Update loop
+	- File system
+	- Module loading
+	- Rendering
+- State
+	- data structures
+	- current entities and scenes
+	- state serialization
+- Simulation
+	- Game logic
+
+How to reload each module:
+- Simulation
+	- Just unload the library, delete the old instance, and reload the DLL
+- State
+	- Serialize current state
+	- Unload simulation and state (simulation depends on state code)
+	- Load state
+	- Deserialize state (with new variables filled in with defaults and removed variables ignored)
+	- Load simulation
+- Core
+	- Serialize current state
+	- Restart application
+	- Deserialize state
+	- Re-apply state (load resources and other things)
+
+
+My desired workflow
+- Start in an empty field
+- Define the level by loading from a GLTF file
+- Create entities and add them to a file system

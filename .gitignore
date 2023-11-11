@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/dynamic_engine
+dynamic_engine.so
+dynamic_engine.dylib
+*.dll
+dynamic_engine.a
+dynamic_engine.lib
+dynamic_engine-test-*
+*.exe
+*.o
+*.obj
+*.lst
+*.pdb

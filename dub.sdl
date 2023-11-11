@@ -1,0 +1,17 @@
+name "dynamic_engine"
+description "A proof-of-concept for dynamic reloading"
+authors "needleful"
+copyright "Copyright © 2023, needleful"
+license "gplv3.0"
+
+configuration "app" {
+	targetType "executable"
+	excludedSourceFiles "source/script.d"
+}
+
+configuration "script" {
+	targetType "dynamicLibrary"
+	targetName "script"
+	dflags "--shared" platform="ldc"
+	excludedSourceFiles "source/app.d"
+}
