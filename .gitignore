@@ -5,7 +5,6 @@ docs/
 /dynamic_engine
 dynamic_engine.so
 dynamic_engine.dylib
-*.dll
 dynamic_engine.a
 dynamic_engine.lib
 dynamic_engine-test-*
@@ -14,3 +13,7 @@ dynamic_engine-test-*
 *.obj
 *.lst
 *.pdb
+*.exp
+*.lib
+*.dll
+dub.selections.json

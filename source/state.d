@@ -1,5 +1,6 @@
 
 module state;
+import runtime;
 
 enum Event {
 	None,
@@ -8,6 +9,5 @@ enum Event {
 }
 
 struct State {
-	string name;
-	Event event;
+	Window window;
 }

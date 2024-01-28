@@ -1,62 +1,42 @@
+
 import std.stdio;
 
+import runtime;
 import state;
 
-struct DynamicScript {
-	import core.runtime;
-	alias initFunc = extern(C) State function();
-	alias stateFunc = extern(C) bool function(State*);
-
-	void* library;
-	initFunc initialize;
-	stateFunc reload;
-	stateFunc update;
-
-	this(string path) {
-		load(path);
-	}
-
-	void load(string path) {
-		library = Runtime.loadLibrary(path);
-
-		import core.sys.windows.winbase:GetProcAddress;
-		initialize = cast(initFunc) GetProcAddress(library, "initialize");
-		reload = cast(stateFunc) GetProcAddress(library, "reload");
-		update = cast(stateFunc) GetProcAddress(library, "update");
-		
-		assert(initialize != null);
-		assert(reload != null);
-		assert(update != null);
-	}
-
-	void clear() {
-		if(library) {
-			Runtime.unloadLibrary(library);
-		}
-		library = null;
-		initialize = null;
-		reload = null;
-		update = null;
-	}
-
-	~this() {
-		clear();
-	}
-}
-
-void main()
+int main()
 {
-	DynamicScript lib = DynamicScript("script.dll");
+	DynamicLibrary lib = DynamicLibrary("script.dll");
+	
+	State state;
+	state.window = Window.create();
+	Event r = lib.initialize(&state);
+	if (r == Event.Exit) {
+		writeln("Game failed to initialize. Exiting now.");
+		return 1;
+	}
 
-	State state = lib.initialize();
-	while(state.event != Event.Exit) {
-		lib.update(&state);
-		if(state.event == Event.Reload) {
-			lib.clear();
-			import std.process;
-			Pid pid = spawnProcess(["dub", "build", "--config=script"]);
-			wait(pid);
-			lib.load("script.dll");
+	bool quit = false;
+	while(!quit){
+		SDL_Event se;
+		while(SDL_PollEvent(&se)) {
+			Event le = lib.update(&state, se);
+			if (le == Event.Reload) {
+				lib.unload();
+				import std.process;
+				Pid pid = spawnProcess(["dub", "build", "--config=script"]);
+				wait(pid);
+				lib.load("script.dll");
+				if(lib.reload(&state) == Event.Exit) {
+					writeln("Failed to reload library");
+					quit = true;
+				}
+			}
+			else if(le == Event.Exit) {
+				quit = true;
+			}
 		}
 	}
+	lib.quit(&state);
+	return 0;
 }

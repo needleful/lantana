@@ -4,9 +4,14 @@ authors "needleful"
 copyright "Copyright © 2023, needleful"
 license "gplv3.0"
 
+dependency "bindbc-sdl" version="~>1.4.2"
+subConfiguration "bindbc-sdl" "staticBC"
+libs "SDL2"
+
 configuration "app" {
 	targetType "executable"
-	excludedSourceFiles "source/script.d"
+	excludedSourceFiles "source/game/dllmain.d"
+	preBuildCommands "dub build --config=script"
 }
 
 configuration "script" {
