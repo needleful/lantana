@@ -4,13 +4,15 @@ authors "needleful"
 copyright "Copyright © 2023, needleful"
 license "gplv3.0"
 
+dependency "bindbc-opengl" version="~>1.0.0"
+versions "GL_43"
 dependency "bindbc-sdl" version="~>1.4.2"
 subConfiguration "bindbc-sdl" "staticBC"
 libs "SDL2"
 
 configuration "app" {
 	targetType "executable"
-	excludedSourceFiles "source/game/dllmain.d"
+	excludedSourceFiles "source/game/*"
 	preBuildCommands "dub build --config=script"
 }
 

@@ -23,28 +23,37 @@ version(Windows)
 extern(C):
 
 Event initialize(State* s) {
+	try{
+		s.window = Window(700, 700, "Dynamic Engine");
+	}
+	catch (Throwable e) {
+		writeln(e);
+		return Event.Exit;
+	}
 	return Event.None;
 }
 
 Event reload(State* s) {
-	s.window.setColor(255, 0, 0);
-	s.window.redraw();
 	writeln("Reloaded library");
 	return Event.None;
 }
 
 Event update(State* s, SDL_Event e) {
-	switch(e.type) {
-	case SDL_QUIT:
-		return Event.Exit;
-	case SDL_KEYDOWN:
-		if (e.key.keysym.sym == SDLK_r)
-			return Event.Reload;
-		break;
-	default:
-		break;
+	while(true) {
+		while(SDL_PollEvent(&e)) {
+			switch(e.type) {
+			case SDL_QUIT:
+				return Event.Exit;
+			case SDL_KEYDOWN:
+				if (e.key.keysym.sym == SDLK_r)
+					return Event.Reload;
+				break;
+			default:
+				break;
+			}
+		}
 	}
-	return Event.None;
+	//Thread.sleep(dur!"msecs"(16));
 }
 
 Event quit(State* s) {
