@@ -7,12 +7,11 @@ public import runtime.sdl;
 struct DynamicLibrary {
 	import core.runtime;
 	alias stateFunc = extern(C) Event function(State*);
-	alias eventFunc = extern(C) Event function(State*, SDL_Event e);
 
 	void* library;
 	stateFunc initialize;
 	stateFunc reload;
-	eventFunc update;
+	stateFunc update;
 	stateFunc quit;
 
 	this(string path) {
@@ -26,7 +25,7 @@ struct DynamicLibrary {
 		import core.sys.windows.winbase:GetProcAddress;
 		initialize = cast(stateFunc) GetProcAddress(library, "initialize");
 		reload = cast(stateFunc) GetProcAddress(library, "reload");
-		update = cast(eventFunc) GetProcAddress(library, "update");
+		update = cast(stateFunc) GetProcAddress(library, "update");
 		quit = cast(stateFunc) GetProcAddress(library, "quit");
 		
 		assert(initialize != null);

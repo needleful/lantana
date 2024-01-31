@@ -15,8 +15,7 @@ int main()
 		return 1;
 	}
 
-	SDL_Event se;
-	for(Event e = Event.None; e != Event.Exit; e = lib.update(&state, se)){
+	for(Event e = Event.None; e != Event.Exit; e = lib.update(&state)){
 		if (e == Event.Reload) {
 			lib.unload();
 			import std.process;

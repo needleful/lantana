@@ -4,11 +4,13 @@ authors "needleful"
 copyright "Copyright © 2023, needleful"
 license "gplv3.0"
 
-dependency "bindbc-opengl" version="~>1.0.0"
+dependency "bindbc-opengl" version="~>1.1.0"
 versions "GL_43"
 dependency "bindbc-sdl" version="~>1.4.2"
-subConfiguration "bindbc-sdl" "staticBC"
+subConfiguration "bindbc-sdl" "static"
 libs "SDL2"
+
+lflags "/WHOLEARCHIVE:BindBC_SDL" platform="ldc" platform="windows"
 
 configuration "app" {
 	targetType "executable"
@@ -16,9 +18,9 @@ configuration "app" {
 	preBuildCommands "dub build --config=script"
 }
 
-configuration "script" {
+configuration "script" { 
 	targetType "dynamicLibrary"
 	targetName "script"
-	dflags "--shared" platform="ldc"
+	dflags "-shared"
 	excludedSourceFiles "source/app.d"
 }

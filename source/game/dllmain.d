@@ -20,7 +20,7 @@ version(Windows)
 	mixin SimpleDllMain;
 }
 
-extern(C):
+export extern(C):
 
 Event initialize(State* s) {
 	try{
@@ -38,14 +38,15 @@ Event reload(State* s) {
 	return Event.None;
 }
 
-Event update(State* s, SDL_Event e) {
+Event update(State* s) {
 	while(true) {
-		while(SDL_PollEvent(&e)) {
-			switch(e.type) {
+		SDL_Event event;
+		while(SDL_PollEvent(&event)) {
+			switch(event.type) {
 			case SDL_QUIT:
 				return Event.Exit;
 			case SDL_KEYDOWN:
-				if (e.key.keysym.sym == SDLK_r)
+				if (event.key.keysym.sym == SDLK_r)
 					return Event.Reload;
 				break;
 			default:
