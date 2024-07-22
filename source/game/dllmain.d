@@ -2,9 +2,7 @@
 module game.dllmain;
 
 import std.stdio;
-import state;
-
-import runtime.sdl;
+import runtime;
 
 shared static this() {
 	writeln("Loading library");
@@ -20,25 +18,36 @@ version(Windows)
 	mixin SimpleDllMain;
 }
 
+struct GameState {
+	Descriptor descriptor;
+	int counter = 0;
+}
+
+GameState *gs;
+
 export extern(C):
 
-Event initialize(State* s) {
-	try{
-		s.window = Window(700, 700, "Dynamic Engine");
-	}
-	catch (Throwable e) {
-		writeln(e);
+Event initialize(RuntimeState* rs) {
+	gs = rs.memory.make!GameState();
+	if(!gs) {
+		writeln("Could not allocate game state!");
 		return Event.Exit;
 	}
 	return Event.None;
 }
 
-Event reload(State* s) {
+Event reload(GameState* p_gs) {
+	auto desc = Descriptor.of!GameState();
+	if(p_gs.descriptor != desc) {
+		writefln("GameState structure changed! %s versus %s", desc, p_gs.descriptor);
+		return Event.Exit;
+	}
+	gs = p_gs;
 	writeln("Reloaded library");
 	return Event.None;
 }
 
-Event update(State* s) {
+Event update() {
 	while(true) {
 		SDL_Event event;
 		while(SDL_PollEvent(&event)) {
@@ -48,15 +57,22 @@ Event update(State* s) {
 			case SDL_KEYDOWN:
 				if (event.key.keysym.sym == SDLK_r)
 					return Event.Reload;
+				if (event.key.keysym.sym == SDLK_SPACE)
+					writefln("I'm HAPPY times %d", ++gs.counter);
 				break;
 			default:
 				break;
 			}
 		}
 	}
-	//Thread.sleep(dur!"msecs"(16));
+	Thread.sleep(dur!"msecs"(16));
 }
 
-Event quit(State* s) {
+Event quit() {
 	return Event.Exit;
+}
+
+GameState* getState(){
+	gs.descriptor = Descriptor.of!GameState();
+	return gs;
 }

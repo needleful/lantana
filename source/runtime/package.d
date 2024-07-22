@@ -1,18 +1,34 @@
 
 module runtime;
-import state;
+public import runtime.memory;
 public import runtime.sdl;
+public import runtime.state;
 
+enum Event {
+	None,
+	Exit,
+	Reload
+}
+
+struct Descriptor {
+	uint size;
+	static Descriptor of(T)() {
+		Descriptor d;
+		d.size = T.sizeof;
+		return d;
+	}
+}
 
 struct DynamicLibrary {
 	import core.runtime;
-	alias stateFunc = extern(C) Event function(State*);
+	alias eventFunc = extern(C) Event function();
 
 	void* library;
-	stateFunc initialize;
-	stateFunc reload;
-	stateFunc update;
-	stateFunc quit;
+	eventFunc update;
+	eventFunc quit;
+	extern(C) Event function(RuntimeState*) initialize;
+	extern(C) Event function(void*) reload;
+	extern(C) void* function() getState;
 
 	this(string path) {
 		load(path);
@@ -23,15 +39,17 @@ struct DynamicLibrary {
 		assert(library != null);
 
 		import core.sys.windows.winbase:GetProcAddress;
-		initialize = cast(stateFunc) GetProcAddress(library, "initialize");
-		reload = cast(stateFunc) GetProcAddress(library, "reload");
-		update = cast(stateFunc) GetProcAddress(library, "update");
-		quit = cast(stateFunc) GetProcAddress(library, "quit");
+		initialize = cast(typeof(initialize)) GetProcAddress(library, "initialize");
+		reload = cast(typeof(reload)) GetProcAddress(library, "reload");
+		update = cast(typeof(update)) GetProcAddress(library, "update");
+		quit = cast(typeof(quit)) GetProcAddress(library, "quit");
+		getState = cast(typeof(getState)) GetProcAddress(library, "getState");
 		
 		assert(initialize != null);
 		assert(reload != null);
 		assert(update != null);
 		assert(quit != null);
+		assert(getState != null);
 	}
 
 	void unload() {
