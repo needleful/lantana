@@ -1,6 +1,6 @@
 
-module runtime.state;
-import runtime;
+module lantana.runtime.state;
+import lantana.core;
 
 struct RuntimeState {
 	Window window;

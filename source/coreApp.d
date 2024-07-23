@@ -1,7 +1,9 @@
 
 import std.stdio;
 
-import runtime;
+import lantana.core;
+import lantana.runtime;
+import lantana.runtime.dll;
 
 static RuntimeState state;
 

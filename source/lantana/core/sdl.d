@@ -1,5 +1,5 @@
 
-module runtime.sdl;
+module lantana.core.sdl;
 
 public import bindbc.opengl;
 public import bindbc.sdl;

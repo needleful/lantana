@@ -1,15 +1,7 @@
 
-module runtime;
-public import runtime.memory;
-public import runtime.sdl;
-public import runtime.reflection;
-public import runtime.state;
+module lantana.runtime.dll;
 
-enum Event {
-	None,
-	Exit,
-	Reload
-}
+import lantana.runtime;
 
 struct DynamicLibrary {
 	import core.runtime;

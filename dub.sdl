@@ -15,12 +15,11 @@ lflags "/WHOLEARCHIVE:BindBC_SDL" platform="ldc" platform="windows"
 configuration "app" {
 	targetType "executable"
 	excludedSourceFiles "source/game/*"
-	preBuildCommands "dub build --config=script"
 }
 
 configuration "script" { 
 	targetType "dynamicLibrary"
 	targetName "script"
 	dflags "-shared"
-	excludedSourceFiles "source/app.d"
+	excludedSourceFiles "source/coreApp.d"
 }

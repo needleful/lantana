@@ -2,8 +2,10 @@
 module game.dllmain;
 
 import std.stdio;
-import game;
-import runtime;
+
+import game.main;
+import lantana.core;
+import lantana.runtime;
 
 shared static this() {
 	writeln("Loading library");
@@ -27,6 +29,7 @@ Event initialize(RuntimeState* rs) {
 		writeln("Could not allocate game state!");
 		return Event.Exit;
 	}
+	gs.runtime = rs;
 	return Event.None;
 }
 
@@ -42,24 +45,7 @@ Event reload(GameState* p_gs) {
 }
 
 Event update() {
-	while(true) {
-		SDL_Event event;
-		while(SDL_PollEvent(&event)) {
-			switch(event.type) {
-			case SDL_QUIT:
-				return Event.Exit;
-			case SDL_KEYDOWN:
-				if (event.key.keysym.sym == SDLK_r)
-					return Event.Reload;
-				if (event.key.keysym.sym == SDLK_SPACE)
-					writefln("I'm HAPPY times %d", ++gs.counter*gs.counter);
-				break;
-			default:
-				break;
-			}
-		}
-	}
-	Thread.sleep(dur!"msecs"(16));
+	return runGame();
 }
 
 Event quit() {

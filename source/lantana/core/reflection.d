@@ -1,5 +1,5 @@
 
-module runtime.reflection;
+module lantana.core.reflection;
 
 
 struct Descriptor {
