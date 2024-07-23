@@ -2,6 +2,7 @@
 module game.dllmain;
 
 import std.stdio;
+import game;
 import runtime;
 
 shared static this() {
@@ -17,13 +18,6 @@ version(Windows)
 	import core.sys.windows.dll;
 	mixin SimpleDllMain;
 }
-
-struct GameState {
-	Descriptor descriptor;
-	int counter = 0;
-}
-
-GameState *gs;
 
 export extern(C):
 
@@ -58,7 +52,7 @@ Event update() {
 				if (event.key.keysym.sym == SDLK_r)
 					return Event.Reload;
 				if (event.key.keysym.sym == SDLK_SPACE)
-					writefln("I'm HAPPY times %d", ++gs.counter);
+					writefln("I'm HAPPY times %d", ++gs.counter*gs.counter);
 				break;
 			default:
 				break;

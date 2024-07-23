@@ -34,10 +34,11 @@ int main()
 				writeln("Failed to compile script!");
 				return 1;
 			}
+			
 			game.load("script.dll");
 			if(game.reload(gameState) == Event.Exit) {
 				writeln("Failed to reload library");
-				e = Event.Exit;
+				return 2;
 			}
 		}
 	}

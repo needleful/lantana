@@ -2,21 +2,13 @@
 module runtime;
 public import runtime.memory;
 public import runtime.sdl;
+public import runtime.reflection;
 public import runtime.state;
 
 enum Event {
 	None,
 	Exit,
 	Reload
-}
-
-struct Descriptor {
-	uint size;
-	static Descriptor of(T)() {
-		Descriptor d;
-		d.size = T.sizeof;
-		return d;
-	}
 }
 
 struct DynamicLibrary {
