@@ -2,8 +2,9 @@
 import std.stdio;
 
 import lantana.core;
-import lantana.runtime;
 import lantana.runtime.dll;
+import lantana.runtime.events;
+import lantana.runtime.state;
 
 static RuntimeState state;
 
@@ -17,11 +18,8 @@ int main()
 {
 	assert(compile() == 0);
 	DynamicLibrary game = DynamicLibrary("script.dll");
-	
-	state.window = Window(700, 700, "Dynamic Engine");
-	state.memory = BaseRegion(1024);
-
 	Event r = game.initialize(&state);
+
 	if (r == Event.Exit) {
 		writeln("Game failed to initialize. Exiting now.");
 		return 1;

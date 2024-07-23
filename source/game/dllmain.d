@@ -24,6 +24,9 @@ version(Windows)
 export extern(C):
 
 Event initialize(RuntimeState* rs) {
+	rs.window = Window(700, 700, "Dynamic Engine");
+	assert(glDepthMask);
+	rs.memory = BaseRegion(1024);
 	gs = rs.memory.make!GameState();
 	if(!gs) {
 		writeln("Could not allocate game state!");
@@ -40,11 +43,18 @@ Event reload(GameState* p_gs) {
 		return Event.Exit;
 	}
 	gs = p_gs;
+
+	import bindbc.opengl;
+	import std.format;
+	GLSupport glResult = loadOpenGL();
+	assert(glResult >= GLSupport.gl43, format("OpenGL 4.3 or higher required! Got %s", glResult));
+
 	writeln("Reloaded library");
 	return Event.None;
 }
 
 Event update() {
+	assert(glDepthMask);
 	return runGame();
 }
 

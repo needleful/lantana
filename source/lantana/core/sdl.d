@@ -35,7 +35,7 @@ struct Window {
 		
 		glFrontFace(GL_CCW);
 		glDepthFunc(GL_LESS);
-		glClearColor(0.5, 0.5, 0.5, 1);
+		glClearColor(1, 1, 1, 1);
 		glClearDepth(1.0f);
 	}
 

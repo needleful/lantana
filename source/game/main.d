@@ -26,6 +26,7 @@ GameState *gs;
 
 Event runGame() {
 	while(true) {
+		assert(glDepthMask);
 		SDL_Event event;
 		while(SDL_PollEvent(&event)) {
 			switch(event.type) {
@@ -41,11 +42,9 @@ Event runGame() {
 				break;
 			}
 		}
-	}
-	with(gs.window()) {
 		glClearColor(1, 1, 1, 1);
-		beginFrame();
-		endFrame();
+		gs.window().beginFrame();
+		gs.window().endFrame();
+		Thread.sleep(dur!"msecs"(16));
 	}
-	Thread.sleep(dur!"msecs"(16));
 }
