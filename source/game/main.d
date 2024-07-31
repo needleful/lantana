@@ -5,6 +5,8 @@ import core.thread.osthread;
 import core.time;
 import std.stdio;
 
+import game.ui.core;
+
 import lantana.core;
 import lantana.runtime;
 

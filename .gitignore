@@ -17,3 +17,4 @@ dynamic_engine-test-*
 *.lib
 *.dll
 dub.selections.json
+*.i

@@ -13,7 +13,8 @@ struct Window {
 		import std.format;
 		import std.string;
 
-		if(SDL_Init(SDL_INIT_VIDEO) < 0) {
+    	SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "0");
+		if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER|SDL_INIT_EVENTS) < 0) {
 			throw new Exception(format("Could not initialize SDL: %s", fromStringz(SDL_GetError())));
 		}
 		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
