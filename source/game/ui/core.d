@@ -1,8 +1,8 @@
 
 module game.ui.core;
 
+public import nuklear;
 import lantana.core.sdl;
-import nuklear;
 
 // I stole this all from the SDL GL3 demo. Hope it works in OpenGL 4!
 struct nk_sdl_device {
@@ -26,7 +26,7 @@ struct nk_sdl_vertex {
     nk_byte[4] col;
 }
 
-private struct nk_sdl {
+struct nk_sdl {
     SDL_Window *win;
     nk_sdl_device ogl;
     nk_context ctx;
@@ -35,9 +35,8 @@ private struct nk_sdl {
 
 void nk_sdl_device_create(ref nk_sdl sdl)
 {
-    GLint status;
     static const(GLchar*) vertex_shader =
-        "#version 430 es\n" ~
+        "#version 430\n" ~
         "uniform mat4 ProjMtx;\n"~
         "in vec2 Position;\n"~
         "in vec2 TexCoord;\n"~
@@ -50,7 +49,7 @@ void nk_sdl_device_create(ref nk_sdl sdl)
         "   gl_Position = ProjMtx * vec4(Position.xy, 0, 1);\n"~
         "}\n";
     static const(GLchar*) fragment_shader =
-        "#version 430 es\n"~
+        "#version 430\n"~
         "precision mediump float;\n"~
         "uniform sampler2D Texture;\n"~
         "in vec2 Frag_UV;\n"~
@@ -69,15 +68,22 @@ void nk_sdl_device_create(ref nk_sdl sdl)
     glShaderSource(dev.frag_shdr, 1, &fragment_shader, null);
     glCompileShader(dev.vert_shdr);
     glCompileShader(dev.frag_shdr);
+    GLint status;
     glGetShaderiv(dev.vert_shdr, GL_COMPILE_STATUS, &status);
-    assert(status == GL_TRUE);
+    if(status != GL_TRUE) {
+        throw new Exception("Nuklear vertex shader did not compile.");
+    }
     glGetShaderiv(dev.frag_shdr, GL_COMPILE_STATUS, &status);
-    assert(status == GL_TRUE);
+    if(status != GL_TRUE) {
+        throw new Exception("Nuklear fragment shader did not compile.");
+    }
     glAttachShader(dev.prog, dev.vert_shdr);
     glAttachShader(dev.prog, dev.frag_shdr);
     glLinkProgram(dev.prog);
     glGetProgramiv(dev.prog, GL_LINK_STATUS, &status);
-    assert(status == GL_TRUE);
+    if(status != GL_TRUE) {
+        throw new Exception("Nuklear shaders did not link.");
+    }
 
     dev.uniform_tex = glGetUniformLocation(dev.prog, "Texture");
     dev.uniform_proj = glGetUniformLocation(dev.prog, "ProjMtx");
@@ -250,7 +256,7 @@ nk_sdl_render(ref nk_sdl sdl, nk_anti_aliasing AA, int max_vertex_buffer, int ma
     glDisable(GL_SCISSOR_TEST);
 }
 
-extern(C) private void
+extern(C) void
 nk_sdl_clipboard_paste(nk_handle usr, nk_text_edit *edit)
 {
     const char *text = SDL_GetClipboardText();
@@ -258,7 +264,7 @@ nk_sdl_clipboard_paste(nk_handle usr, nk_text_edit *edit)
     cast(void)usr;
 }
 
-extern(C) private void
+extern(C) void
 nk_sdl_clipboard_copy(nk_handle usr, const char *text, int len)
 {
     char *str = null;

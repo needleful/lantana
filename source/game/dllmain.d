@@ -24,16 +24,7 @@ version(Windows)
 export extern(C):
 
 Event initialize(RuntimeState* rs) {
-	rs.window = Window(700, 700, "Dynamic Engine");
-	assert(glDepthMask);
-	rs.memory = BaseRegion(1024);
-	gs = rs.memory.make!GameState();
-	if(!gs) {
-		writeln("Could not allocate game state!");
-		return Event.Exit;
-	}
-	gs.runtime = rs;
-	return Event.None;
+	return initGame(rs);
 }
 
 Event reload(GameState* p_gs) {

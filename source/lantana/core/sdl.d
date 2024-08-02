@@ -6,8 +6,8 @@ public import bindbc.sdl;
 
 struct Window {
 	// Private so my dumb brain doesn't try reading these from the DLL
-	private SDL_Window* window;
-	private SDL_GLContext glContext;
+	SDL_Window* sdlWindow;
+	SDL_GLContext glContext;
 
 	this(uint width, uint height, const(char*) name) {
 		import std.format;
@@ -23,13 +23,13 @@ struct Window {
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-		window = SDL_CreateWindow(
+		sdlWindow = SDL_CreateWindow(
 			name, 
 			cast(int)SDL_WINDOWPOS_CENTERED, 
 			cast(int)SDL_WINDOWPOS_CENTERED, 
 			width, height, 
 			SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-		glContext = SDL_GL_CreateContext(window);
+		glContext = SDL_GL_CreateContext(sdlWindow);
 		
 		GLSupport glResult = loadOpenGL();
 		assert(glResult >= GLSupport.gl43, format("OpenGL 4.3 or higher required! Got %s", glResult));
@@ -57,13 +57,13 @@ struct Window {
 
 	void endFrame() 
 	{
-		SDL_GL_SwapWindow(window);
+		SDL_GL_SwapWindow(sdlWindow);
 		assert(glGetError() == GL_NO_ERROR);
 	}
 
 	~this() {
-		if(window) {
-			SDL_DestroyWindow(window);
+		if(sdlWindow) {
+			SDL_DestroyWindow(sdlWindow);
 			SDL_GL_DeleteContext(glContext);
 			SDL_Quit();
 		}

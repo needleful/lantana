@@ -32,13 +32,12 @@ int main()
 			
 			if(compile() != 0) {
 				writeln("Failed to compile script!");
-				return 1;
 			}
 			
 			game.load("script.dll");
 			if(game.reload(gameState) == Event.Exit) {
 				writeln("Failed to reload library");
-				return 2;
+				return 1;
 			}
 		}
 	}
