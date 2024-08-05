@@ -72,6 +72,25 @@ struct UI {
 	float height() {
 		return nk_widget_height(&sdl.ctx);
 	}
+
+	void colorPicker(ref nk_colorf color, nk_color_format format = NK_RGBA) {
+		color = nk_color_picker(&sdl.ctx, color, format);
+	}
+
+	void radio(Enum)(ref Enum value, int height)
+		if(is(Enum == enum) && __traits(isIntegral, Enum))
+	{
+		import std.meta;
+		import std.traits;
+		flexRow(height, EnumMembers!Enum.length);
+		static foreach(i, member; EnumMembers!Enum) {{
+			enum memberName = __traits(identifier, EnumMembers!Enum[i]);
+			if(option(memberName, value == member)) {
+				value = member;
+			} 
+		}}
+	}
+
 }
 
 struct Combo(T) {

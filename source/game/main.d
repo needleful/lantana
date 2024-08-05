@@ -29,10 +29,10 @@ struct GameState {
 }
 
 struct UIState {
+	enum Op {Trivial, Easy, Hard};
 	nk_colorf bg = {0.2, 0.2, 0.2 ,1};
-	enum {EASY, HARD};
-	int op = EASY;
 	int property = 20;
+	Op op = Op.Easy;
 }
 
 GameState *gs;
@@ -80,26 +80,26 @@ Event runGame() {
 				break;
 			}
 		}
+		nk_sdl_handle_grab(&gs.nkui);
+		nk_input_end(&gs.nkui.ctx);
 
 		with(UI(&gs.nkui, "Status", nk_rect(50, 50, 230, 250),
 			NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_SCALABLE|
 			NK_WINDOW_MINIMIZABLE|NK_WINDOW_TITLE)) 
 		{
+			grabHandle();
+			endInput();
 			if(valid) {
-				grabHandle();
-				endInput();
 				flexRow(30, 2);
 				label("Hello from the game");
 				if (button("Reload")) {
 					rtEvent = Event.Reload;
 				}
-				flexRow(30, 2);
-				if (option("Easy", gs.uiState.op == UIState.EASY))
-					gs.uiState.op = UIState.EASY;
-				if (option("Hard", gs.uiState.op == UIState.HARD))
-					gs.uiState.op = UIState.HARD;
 				flexRow(22);
 				slider("Gamer juice:", 0, gs.uiState.property, 10000, 10, 1);
+				if (gs.uiState.property > 100) {
+					radio(gs.uiState.op, 30);
+				}
 
 				flexRow(20);
 				label("Window color:", NK_TEXT_LEFT);
@@ -107,7 +107,7 @@ Event runGame() {
 				with(combo(nk_rgb_cf(gs.uiState.bg), nk_vec2(width(),400))) {
 					if(valid) {
 						flexRow(120);
-						gs.uiState.bg = nk_color_picker(&sdl.ctx, gs.uiState.bg, NK_RGBA);
+						colorPicker(gs.uiState.bg, NK_RGB);
 						flexRow(25);
 						slider("#R:", 0, gs.uiState.bg.r, 1.0f, 0.01f,0.005f);
 						slider("#G:", 0, gs.uiState.bg.g, 1.0f, 0.01f,0.005f);
