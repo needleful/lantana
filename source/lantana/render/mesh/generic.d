@@ -51,7 +51,11 @@ struct DefaultSettings
 
 template GenericMesh(Attrib, Loader, Settings = DefaultSettings)
 {
-	alias texture = Texture!(Settings.textureType);
+	import std.traits;
+	enum hasTextures = isType!(Settings.textureType);
+	static if(hasTextures) {
+		alias texture = Texture!(Settings.textureType);
+	}
 
 	alias Spec = MeshSpec!(Attrib, Loader);
 	private alias MeshData = GLBLoadResults!Spec.MeshData;
@@ -79,7 +83,9 @@ template GenericMesh(Attrib, Loader, Settings = DefaultSettings)
 		Spec.attribType atr;
 		Mesh[] meshes;
 		GLuint[] vbos;
-		texture[] textures;
+		static if(hasTextures) {
+			texture[] textures;
+		}
 
 		Material mat;
 		Uniforms un;
@@ -107,33 +113,44 @@ template GenericMesh(Attrib, Loader, Settings = DefaultSettings)
 			GLBLoadResults!Spec loaded;
 			loaded = glbLoad!Spec(p_filename, p_alloc);
 
-			GLBImage currentImage;
+			static if(hasTextures)
+				GLBImage currentImage;
 			Mesh*[string] result;
+			GLuint[] vaos;
+			vaos.length = loaded.meshes.length;
+			glGenVertexArrays(cast(int) vaos.length, vaos.ptr);
+			uint vindex = 0;
 			foreach(name, meshData; loaded.meshes)
 			{
-				if(currentImage != meshData.accessor.tex_albedo)
-				{
-					currentImage = meshData.accessor.tex_albedo;
-					with(meshData.accessor.tex_albedo)
+				static if(hasTextures) {
+					if(currentImage != meshData.accessor.tex_albedo)
 					{
-						textures ~= texture(type, loaded.data[byteOffset..byteOffset+byteLength], p_alloc, Settings.filter);
+						currentImage = meshData.accessor.tex_albedo;
+						with(meshData.accessor.tex_albedo)
+						{
+							textures ~= texture(type, loaded.data[byteOffset..byteOffset+byteLength], p_alloc, Settings.filter);
+						}
 					}
 				}
+				glBindVertexArray(vaos[vindex]);
+				GLuint[meshData.accessor.fieldCount] newVbos;
+				glGenBuffers(meshData.accessor.fieldCount, &newVbos[0]);
 
-				uint offset, length;
-				meshData.accessor.bounds(offset, length);
-				meshData.accessor.subtractOffset(offset);
-				debug writefln("Offset: %u, length: %u, of total %u", offset, length, loaded.data.length);
+				static foreach(i, field; meshData.accessor.fields) {{
+					uint offset = mixin("meshData.accessor."~field).byteOffset;
+					uint length = mixin("meshData.accessor."~field).byteLength;
+					glBindBuffer(GL_ARRAY_BUFFER, newVbos[i]);
+					glBufferData(GL_ARRAY_BUFFER, length, &loaded.data[offset], GL_STATIC_DRAW);
+					debug writefln("VBO: Offset: %u, length: %u, of total %u", offset, length, loaded.data.length);
+				}}
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, newVbos[$-1]);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshData.accessor.indices.byteLength, &loaded.data[meshData.accessor.indices.byteOffset], GL_STATIC_DRAW);
 
-				GLuint vbo;
-				glGenBuffers(1, &vbo);
-				glBindBuffer(GL_ARRAY_BUFFER, vbo);
-				glBufferData(GL_ARRAY_BUFFER, length, &loaded.data[offset], GL_STATIC_DRAW);
-				vbos ~= vbo;
-
-				meshes ~= Mesh(this, meshData, loaded.data, vbo);
+				vbos ~= newVbos;
+				meshes ~= Mesh(this, meshData, loaded.data, vaos[vindex]);
 
 				result[name] = &meshes[$-1];
+				vindex ++;
 			}
 			glcheck();
 			return result;
@@ -189,7 +206,7 @@ template GenericMesh(Attrib, Loader, Settings = DefaultSettings)
 					GL_TRIANGLES, 
 					cast(int)inst.mesh.accessor.indices.count(),
 					inst.mesh.accessor.indices.componentType,
-					cast(GLvoid*) inst.mesh.accessor.indices.byteOffset);
+					cast(GLvoid*) 0);
 				glcheck();
 			}
 
@@ -260,7 +277,7 @@ template GenericMesh(Attrib, Loader, Settings = DefaultSettings)
 		Spec.accessor accessor;
 		GLuint vao;
 
-		this(ref System p_system, MeshData p_data, ubyte[] p_bytes, GLuint p_vbo)
+		this(ref System p_system, MeshData p_data, ubyte[] p_bytes, GLuint p_vao)
 		{
 			glcheck();
 
@@ -277,11 +294,9 @@ template GenericMesh(Attrib, Loader, Settings = DefaultSettings)
 			}
 
 			glcheck();
-			glGenVertexArrays(1, &vao);
-			glBindVertexArray(vao);
+			vao = p_vao;
 			p_system.atr.enable();
 			p_system.atr.initialize(accessor);
-			p_system.atr.disable();
 			glBindVertexArray(0);
 
 			glcheck();

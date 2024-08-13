@@ -8,8 +8,9 @@ import std.stdio;
 import game.ui.core;
 import game.ui.simple;
 
+import lantana.math.vectors;
 import lantana.render;
-import lantana.types;
+import lantana.types.collections;
 
 import runtime;
 
@@ -19,6 +20,8 @@ struct GameState {
 	RuntimeState* runtime;
 	nk_sdl nkui;
 	UIState uiState;
+	TestMesh.System render;
+	TestMesh.Instance[] meshes;
 
 	int counter = 0;
 
@@ -50,20 +53,21 @@ struct TestLoader {
 
 import lantana.render.mesh.generic;
 
-struct TestUniforms {}
-
 struct TestSettings
 {
+	struct Empty {}
+	static Empty uniforms;
+	import lantana.types;
 	enum alphaBlend = false;
 	enum depthTest = true;
 	enum depthWrite = true;
 	enum filter = Filter(TexFilter.Linear, TexFilter.MipMaps);
-	alias textureType = Color;
-	alias globalUniforms = TestUniforms;
-	alias instanceUniforms = TestUniforms;
+	enum textureType = false;
+	alias globalUniforms = Empty;
+	alias instanceUniforms = Empty;
 }
 
-alias TestMesh = GenericMesh!(TestAttributes, TestLoader, TestUniforms, TestSettings);
+alias TestMesh = GenericMesh!(TestAttributes, TestLoader, TestSettings);
 
 Event initGame(RuntimeState* rs) {
 	rs.window = Window(700, 700, "Dynamic Engine");
@@ -73,8 +77,13 @@ Event initGame(RuntimeState* rs) {
 		writeln("Could not allocate game state!");
 		return Event.Exit;
 	}
-	gs.runtime = rs;
-	initUI;
+	with(gs) {
+		runtime = rs;
+		render = TestMesh.System("data/shaders/test.vert", "data/shaders/test.frag");
+		TestMesh.Mesh* triangle = render.loadMeshes("data/meshes/triangle.glb", memory).first();
+		meshes = [TestMesh.Instance(triangle)];
+	}
+	initUI();
 	return Event.None;
 }
 
@@ -148,6 +157,8 @@ Event runGame() {
 
 		glClearColor(gs.uiState.bg.r, gs.uiState.bg.g, gs.uiState.bg.b, gs.uiState.bg.a);
 		gs.window().beginFrame();
+		TestSettings.Empty e;
+		gs.render.render(e, gs.meshes);
 		nk_sdl_render(&gs.nkui, NK_ANTI_ALIASING_ON, MAX_VERTEX_MEMORY, MAX_ELEMENT_MEMORY);
 		gs.window().endFrame();
 		Thread.sleep(dur!"msecs"(16));

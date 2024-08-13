@@ -11,7 +11,7 @@ import std.stdio;
 import std.string;
 import std.traits;
 
-import lantana.types.memory;
+import runtime.memory;
 import lantana.types.meta;
 
 struct GenericBinaryType(Type)

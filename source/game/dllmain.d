@@ -18,7 +18,16 @@ shared static ~this() {
 version(Windows)
 {
 	import core.sys.windows.dll;
+	import core.sys.windows.windows;
 	mixin SimpleDllMain;
+	void messageBox(wstring msg) {
+		MessageBoxW(null, msg.ptr, null, MB_ICONEXCLAMATION);
+	}
+}
+else {
+	void messageBox(wstring msg) {
+		writefln("-- %s", msg);
+	}
 }
 
 export extern(C):
@@ -45,8 +54,15 @@ Event reload(GameState* p_gs) {
 }
 
 Event update() {
-	assert(glDepthMask);
-	return runGame();
+	try {
+		assert(glDepthMask);
+		return runGame();
+	}
+	catch (Throwable e) {
+		import std.format;
+			messageBox(format("There was an error:\r\n%s\0"w, e));
+			return Event.Exit;
+	}
 }
 
 Event quit() {

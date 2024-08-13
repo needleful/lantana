@@ -25,5 +25,5 @@ configuration "script" {
 	dflags "-shared"
 	excludedSourceFiles "source/coreApp.d"
 	sourceFiles "source/thirdparty/nuklear.c" "source/thirdparty/freeimage.c"
-	libs "FreeImage"
+	libs "FreeImage" "user32"
 }

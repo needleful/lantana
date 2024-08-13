@@ -13,6 +13,7 @@ import lantana.render;
 
 struct Attr(Struct)
 {
+	alias RootType = Struct;
 	enum fields = FieldNameTuple!Struct;
 	AttribId[fields.length] ids;
 
@@ -50,8 +51,7 @@ struct Attr(Struct)
 					ids[i],
 					mixin("bufferViews."~fields[i]).dataType.componentCount,
 					mixin("bufferViews."~fields[i]).componentType,
-					0,
-					cast(void*) mixin("bufferViews."~fields[i]).byteOffset);
+					0, cast(void*) 0);
 			}
 			else
 			{
@@ -60,8 +60,7 @@ struct Attr(Struct)
 					mixin("bufferViews."~fields[i]).dataType.componentCount,
 					mixin("bufferViews."~fields[i]).componentType,
 					GL_FALSE,
-					0,
-					cast(void*) mixin("bufferViews."~fields[i]).byteOffset);
+					0, cast(void*) 0);
 			}
 			glcheck();
 		}

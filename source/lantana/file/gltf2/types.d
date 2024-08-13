@@ -288,8 +288,10 @@ struct GLBAccessor(Attribs)
 
 	string name;
 	GLBBufferView indices;
+	enum fields = FieldNameTuple!Attribs;
+	enum fieldCount = 1 + fields.length;
 
-	static foreach(field; FieldNameTuple!Attribs)
+	static foreach(field; fields)
 	{
 		mixin(format("GLBBufferView %s;", field));
 	}

@@ -7,7 +7,7 @@ module lantana.render.lights;
 import lantana.render.gl;
 import lantana.render.textures;
 import lantana.types.core;
-import lantana.types.memory;
+import runtime.memory;
 
 struct LightPalette
 {
