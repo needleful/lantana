@@ -1,5 +1,5 @@
 
-module lantana.runtime.events;
+module runtime.events;
 
 enum Event {
 	None,

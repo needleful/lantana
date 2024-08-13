@@ -1,10 +1,8 @@
 
 import std.stdio;
 
-import lantana.core;
-import lantana.runtime.dll;
-import lantana.runtime.events;
-import lantana.runtime.state;
+import runtime;
+import runtime.dll;
 
 static RuntimeState state;
 

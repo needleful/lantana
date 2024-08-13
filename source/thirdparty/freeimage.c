@@ -1,0 +1,2 @@
+
+#include "freeimage/FreeImage.h"

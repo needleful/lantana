@@ -1,7 +1,7 @@
 
-module lantana.runtime.dll;
+module runtime.dll;
 
-import lantana.runtime;
+import runtime;
 
 struct DynamicLibrary {
 	import core.runtime;

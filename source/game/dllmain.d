@@ -4,8 +4,8 @@ module game.dllmain;
 import std.stdio;
 
 import game.main;
-import lantana.core;
-import lantana.runtime;
+import lantana.types.meta;
+import runtime;
 
 shared static this() {
 	writeln("Loading library");

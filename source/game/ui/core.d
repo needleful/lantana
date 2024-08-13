@@ -2,7 +2,7 @@
 module game.ui.core;
 
 public import nuklear;
-import lantana.core.sdl;
+import runtime.sdl;
 
 // I stole this all from the SDL GL3 demo. Hope it works in OpenGL 4!
 struct nk_sdl_device {

@@ -8,10 +8,10 @@ import std.stdio;
 import game.ui.core;
 import game.ui.simple;
 
-import lantana.core;
-import lantana.runtime;
+import runtime;
 
 struct GameState {
+	import lantana.types.meta;
 	Descriptor descriptor;
 	RuntimeState* runtime;
 	nk_sdl nkui;

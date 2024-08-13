@@ -1,4 +1,4 @@
-module lantana.core.memory;
+module runtime.memory;
 
 import std.conv : emplace;
 import std.traits;
