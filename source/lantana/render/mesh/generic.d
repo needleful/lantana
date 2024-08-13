@@ -36,8 +36,7 @@ struct DefaultGlobalUniforms
 	Texture!Color light_palette;
 }
 
-struct DefaultInstanceUniforms {
-}
+struct DefaultInstanceUniforms {}
 
 struct DefaultSettings
 {

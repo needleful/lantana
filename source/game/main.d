@@ -8,6 +8,9 @@ import std.stdio;
 import game.ui.core;
 import game.ui.simple;
 
+import lantana.render;
+import lantana.types;
+
 import runtime;
 
 struct GameState {
@@ -28,6 +31,8 @@ struct GameState {
 	} 
 }
 
+GameState *gs;
+
 struct UIState {
 	enum Op {Trivial, Easy, Hard};
 	nk_colorf bg = {0.2, 0.2, 0.2 ,1};
@@ -35,7 +40,30 @@ struct UIState {
 	Op op = Op.Easy;
 }
 
-GameState *gs;
+struct TestAttributes {
+	Vec3 position;
+}
+
+struct TestLoader {
+	enum position = "POSITION";
+}
+
+import lantana.render.mesh.generic;
+
+struct TestUniforms {}
+
+struct TestSettings
+{
+	enum alphaBlend = false;
+	enum depthTest = true;
+	enum depthWrite = true;
+	enum filter = Filter(TexFilter.Linear, TexFilter.MipMaps);
+	alias textureType = Color;
+	alias globalUniforms = TestUniforms;
+	alias instanceUniforms = TestUniforms;
+}
+
+alias TestMesh = GenericMesh!(TestAttributes, TestLoader, TestUniforms, TestSettings);
 
 Event initGame(RuntimeState* rs) {
 	rs.window = Window(700, 700, "Dynamic Engine");
