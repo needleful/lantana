@@ -18,6 +18,7 @@ dynamic_engine-test-*
 *.dll
 dub.selections.json
 *.i
+*.so
 
 # Backups and extras
 *.blend[0-9]
