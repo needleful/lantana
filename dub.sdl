@@ -12,6 +12,7 @@ versions "SDL_2016"
 libs "SDL2"
 
 lflags "/WHOLEARCHIVE:BindBC_SDL" platform="ldc" platform="windows"
+dflags "-defaultlib=phobos2"
 
 
 configuration "app" {
@@ -25,5 +26,6 @@ configuration "script" {
 	dflags "-shared"
 	excludedSourceFiles "source/coreApp.d"
 	sourceFiles "source/thirdparty/nuklear.c" "source/thirdparty/freeimage.c"
-	libs "FreeImage" "user32"
+	//libs "FreeImage"
+	libs "user32" platform="windows"
 }

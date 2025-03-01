@@ -14,20 +14,30 @@ struct DynamicLibrary {
 	extern(C) Event function(void*) reload;
 	extern(C) void* function() getState;
 
+	static auto getProc(alias fn)(void* library) {
+		version(Windows) {
+			import core.sys.windows.winbase:GetProcAddress;
+			return cast(typeof(fn)) GetProcAddress(library, fn.stringof);
+		}
+		else {
+			import core.sys.posix.dlfcn;
+			return cast(typeof(fn)) dlsym(library, fn.stringof);
+		}
+	}
+
 	this(string path) {
 		load(path);
 	}
 
 	void load(string path) {
 		library = Runtime.loadLibrary(path);
-		assert(library != null);
+		assert(library != null, "Library was not found: "~path);
 
-		import core.sys.windows.winbase:GetProcAddress;
-		initialize = cast(typeof(initialize)) GetProcAddress(library, "initialize");
-		reload = cast(typeof(reload)) GetProcAddress(library, "reload");
-		update = cast(typeof(update)) GetProcAddress(library, "update");
-		quit = cast(typeof(quit)) GetProcAddress(library, "quit");
-		getState = cast(typeof(getState)) GetProcAddress(library, "getState");
+		initialize = getProc!initialize(library);
+		reload = getProc!reload(library);
+		update = getProc!update(library);
+		quit = getProc!quit(library);
+		getState = getProc!getState(library);
 		
 		assert(initialize != null);
 		assert(reload != null);

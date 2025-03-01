@@ -15,7 +15,14 @@ int compile() {
 int main()
 {
 	assert(compile() == 0);
-	DynamicLibrary game = DynamicLibrary("script.dll");
+	string dllPath;
+	version(Windows) {
+		dllPath = "script.dll";
+	}
+	else {
+		dllPath = "libscript.so";
+	}
+	DynamicLibrary game = DynamicLibrary(dllPath);
 	Event r = game.initialize(&state);
 
 	if (r == Event.Exit) {
